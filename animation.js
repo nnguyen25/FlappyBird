@@ -6,22 +6,59 @@ c.height=800
 const ctx= c.getContext("2d")
 
 const birdradius=20
+let restart=150
+
+function y(time) 
+{return restart + initialvelocity * (time-jumptime) + acceleration * Math.pow(time-jumptime, 2)}
+
+let jumptime= 0
+window.addEventListener("keydown", function(event) {
+    if (event.key===" "){
+         restart = y(performance.now())
+         jumptime = performance.now()
+       
+    }
+    
+});
+
+const pipewidth = 45
+const pipegap = 100
+
+class Pipe {
+    constructor(){
+
+        this.height = 400
+    }
+
+draw(){
+    ctx.fillStyle = "darkgreen"
+    ctx.fillRect (0, 0, pipewidth, this.height-pipegap/2 )
+    ctx.fillRect (0, this.height+pipegap/2, pipewidth, c.height)
+
+}
+}
+
+let myPipe = new Pipe ()
 
 
 const initialvelocity=-0.7
 const acceleration=0.0015
-
 function frame(time){
+    const birdheight = y(time)
+    if(birdheight>c.height){}
     ctx.clearRect(0, 0, c.width, c.height)
     ctx.fillStyle="#71c6cf"
     ctx.fillRect(0, 0, c.width, c.height)
+    myPipe.draw()
     ctx.fillStyle="yellow"
     ctx.beginPath()
-    ctx.arc(c.width/2, 150 + initialvelocity * time + acceleration * Math.pow(time, 2), birdradius, 0, 2*Math.PI)
+    ctx.arc(c.width/2, birdheight, birdradius, 0, 2*Math.PI)
     ctx.closePath()
     ctx.fill()
     //ctx.fillRect(0, 150 + initialvelocity * time + acceleration * Math.pow(time, 2), 100, 100)
-    requestAnimationFrame(frame)
+    if(birdheight<c.height - birdradius){
+        requestAnimationFrame(frame)
+    }
 }
 
 function resize() {
