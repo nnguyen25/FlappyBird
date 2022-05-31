@@ -22,23 +22,34 @@ window.addEventListener("keydown", function(event) {
 });
 
 const pipewidth = 45
-const pipegap = 100
+const pipegap = 147
+const pipespeed = -0.2
+const timeBetweenPipes = 1300
 
 class Pipe {
     constructor(){
+        this.creationtime = performance.now()
+        this.height = Math.floor(Math.random()*(c.height-pipegap))+pipegap/2
 
-        this.height = 400
     }
+
+    getx(){ (performance.now()-this.creationtime)*pipespeed+c.width }
+    
 
 draw(){
     ctx.fillStyle = "darkgreen"
-    ctx.fillRect (0, 0, pipewidth, this.height-pipegap/2 )
-    ctx.fillRect (0, this.height+pipegap/2, pipewidth, c.height)
 
+    ctx.fillRect ((performance.now()-this.creationtime)*pipespeed+c.width, 0, pipewidth, this.height-pipegap/2)
+    ctx.fillRect ((performance.now()-this.creationtime)*pipespeed+c.width, this.height+pipegap/2, pipewidth, c.height)
+    
 }
 }
 
-let myPipe = new Pipe ()
+
+const pipes=[];
+setInterval(function(){
+pipes.push(new Pipe());
+},timeBetweenPipes);
 
 
 const initialvelocity=-0.7
@@ -49,7 +60,7 @@ function frame(time){
     ctx.clearRect(0, 0, c.width, c.height)
     ctx.fillStyle="#71c6cf"
     ctx.fillRect(0, 0, c.width, c.height)
-    myPipe.draw()
+    for(let pipe of pipes){pipe.draw()}
     ctx.fillStyle="yellow"
     ctx.beginPath()
     ctx.arc(c.width/2, birdheight, birdradius, 0, 2*Math.PI)
