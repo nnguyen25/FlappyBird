@@ -32,15 +32,19 @@ class Pipe {
         this.height = Math.floor(Math.random()*(c.height-pipegap))+pipegap/2
 
     }
+    
+    colliding(){ let testx= Math.min(Math.max(birdx, this.getx()), this.getx()+pipewidth)
+         return (Math.pow(testx))
+        }
+    getx(){ return (performance.now()-this.creationtime)*pipespeed+c.width }
 
-    getx(){ (performance.now()-this.creationtime)*pipespeed+c.width }
     
 
 draw(){
     ctx.fillStyle = "darkgreen"
 
-    ctx.fillRect ((performance.now()-this.creationtime)*pipespeed+c.width, 0, pipewidth, this.height-pipegap/2)
-    ctx.fillRect ((performance.now()-this.creationtime)*pipespeed+c.width, this.height+pipegap/2, pipewidth, c.height)
+    ctx.fillRect (getx(), 0, pipewidth, this.height-pipegap/2)
+    ctx.fillRect (getx(), this.height+pipegap/2, pipewidth, c.height)
     
 }
 }
