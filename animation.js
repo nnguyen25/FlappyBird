@@ -7,15 +7,18 @@ const ctx= c.getContext("2d")
 
 const birdradius=20
 let restart=150
+let dead=false
 
 function y(time) 
 {return restart + initialvelocity * (time-jumptime) + acceleration * Math.pow(time-jumptime, 2)}
 
 let jumptime= 0
 window.addEventListener("keydown", function(event) {
-    if (event.key===" "){
+    if (event.key===" "&&!dead){
+
          restart = y(performance.now())
          jumptime = performance.now()
+
        
     }
     
@@ -33,8 +36,13 @@ class Pipe {
 
     }
     
-    colliding(){ let testx= Math.min(Math.max(birdx, this.getx()), this.getx()+pipewidth)
-         return (Math.pow(testx))
+    colliding(){ let testx= Math.min(Math.max(c.width/2, this.getx()), this.getx()+pipewidth)-c.width/2
+        let testytop = Math.min(birdheight, this.height-pipegap/2)-birdheight
+        let testybottom = Math.max(birdheight, this.height+pipegap/2)-birdheight
+        
+         return (Math.pow(testx,2)+Math.pow(testytop,2)<=Math.pow(birdradius,2))
+          || (Math.pow(testx,2)+Math.pow(testybottom,2)<=Math.pow(birdradius,2))
+
         }
     getx(){ return (performance.now()-this.creationtime)*pipespeed+c.width }
 
@@ -43,8 +51,8 @@ class Pipe {
 draw(){
     ctx.fillStyle = "darkgreen"
 
-    ctx.fillRect (getx(), 0, pipewidth, this.height-pipegap/2)
-    ctx.fillRect (getx(), this.height+pipegap/2, pipewidth, c.height)
+    ctx.fillRect (this.getx(), 0, pipewidth, this.height-pipegap/2)
+    ctx.fillRect (this.getx(), this.height+pipegap/2, pipewidth, c.height)
     
 }
 }
@@ -55,16 +63,21 @@ setInterval(function(){
 pipes.push(new Pipe());
 },timeBetweenPipes);
 
-
+let birdheight 
 const initialvelocity=-0.7
 const acceleration=0.0015
 function frame(time){
-    const birdheight = y(time)
+    birdheight = y(time)
     if(birdheight>c.height){}
     ctx.clearRect(0, 0, c.width, c.height)
     ctx.fillStyle="#71c6cf"
     ctx.fillRect(0, 0, c.width, c.height)
-    for(let pipe of pipes){pipe.draw()}
+    for(let pipe of pipes){pipe.draw()
+    if (pipe.colliding()){
+        dead=true
+    }
+    }
+
     ctx.fillStyle="yellow"
     ctx.beginPath()
     ctx.arc(c.width/2, birdheight, birdradius, 0, 2*Math.PI)
